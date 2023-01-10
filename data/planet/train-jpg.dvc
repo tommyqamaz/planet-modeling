@@ -1,0 +1,5 @@
+outs:
+- md5: eed51c0717e5da5fd62691504398bfba.dir
+  size: 634676188
+  nfiles: 40479
+  path: train-jpg

@@ -1,0 +1,46 @@
+variables:
+  PIP_CACHE_DIR: "${CI_PROJECT_DIR}/.cache/pip"
+
+cache:
+  key: "${CI_JOB_NAME}"
+  paths:
+    - .cache/pip
+    - .venv
+
+stages:
+  - quality
+  - tests
+
+
+.install-deps-template: &install-deps
+  before_script:
+    - make install
+    - make install_c_libs
+
+.quality-template: &quality
+  <<: *install-deps
+  image: python:3.9
+  stage: quality
+
+.test-template: &test
+  <<: *install-deps
+  stage: tests
+  coverage: '/TOTAL.*\s(\d+\.\d+\%)/'
+  script: make test-coverage
+  artifacts:
+    paths:
+      - htmlcov
+    when: always
+    expire_in: 1 week
+
+
+check-flake8:
+  <<: *quality
+  script: make lint
+  tags: ['cuda']
+
+
+test:
+  <<: *test
+  image: python:3.9
+  tags: ['cuda']

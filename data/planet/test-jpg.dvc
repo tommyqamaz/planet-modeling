@@ -1,0 +1,5 @@
+outs:
+- md5: 5d01554438113bfe9c14330a537b74e8.dir
+  size: 637797062
+  nfiles: 40669
+  path: test-jpg
