@@ -1,15 +1,18 @@
 import pytest
 import torch
 from src.model import LitModel
-from src.config import config, IMG_SIZE
+from config.config import config, IMG_SIZE
 
 from tests.fixtures.model import NeuralNetwork
 
 
-def test_forward():
-    input_img = torch.randn(1, 1, IMG_SIZE, IMG_SIZE)
+@pytest.fixture()
+def model():
+    return NeuralNetwork()
 
-    model = NeuralNetwork()
+
+def test_forward(model):
+    input_img = torch.ones(1, 1, IMG_SIZE, IMG_SIZE)
 
     lit_model = LitModel(
         model,

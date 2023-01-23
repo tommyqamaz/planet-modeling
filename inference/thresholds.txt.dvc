@@ -1,0 +1,4 @@
+outs:
+- md5: ed18c15999bea90ae32c22c3cac1955d
+  size: 339
+  path: thresholds.txt

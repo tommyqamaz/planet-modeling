@@ -1,0 +1,4 @@
+outs:
+- md5: 1649f8ac0b1e05f506783dd137c5b57f
+  size: 54246363
+  path: pvt_v2_b1.onnx

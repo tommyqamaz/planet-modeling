@@ -16,6 +16,14 @@ stages:
   before_script:
     - make install
     - make install_c_libs
+    - chmod 400 $SSH_PRIVATE_KEY
+    - mkdir -p ~/.ssh
+    - cp $SSH_PRIVATE_KEY ~/.ssh/id_rsa
+    - chmod 400 ~/.ssh/id_rsa
+    - make download_weights
+  
+  after_script:
+      - rm -f ~/.ssh/id_rsa
 
 .quality-template: &quality
   <<: *install-deps
@@ -37,10 +45,10 @@ stages:
 check-flake8:
   <<: *quality
   script: make lint
-  tags: ['cuda']
+  tags: ['cvr-nov22']
 
 
 test:
   <<: *test
   image: python:3.9
-  tags: ['cuda']
+  tags: ['cvr-nov22']

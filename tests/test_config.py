@@ -3,7 +3,7 @@ import os
 
 
 def test_config():
-    from src.config import config, SEED, IMG_SIZE, BATCH_SIZE, N_EPOCHS
+    from config.config import config, SEED, IMG_SIZE, BATCH_SIZE, N_EPOCHS
 
     assert SEED
     assert IMG_SIZE > 0
@@ -13,13 +13,13 @@ def test_config():
 
 
 def test_files_exist():
-    from src.config import DATA_PATH
+    from config.config import data_config
 
-    assert os.path.exists(DATA_PATH)
+    assert os.path.exists(data_config.data_path)
 
 
 def test_optimizers():
-    from src.config import config
+    from config.config import config
     from tests.fixtures.model import NeuralNetwork
 
     model = NeuralNetwork()

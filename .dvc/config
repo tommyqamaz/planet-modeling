@@ -1,4 +1,8 @@
 [core]
-    remote = storage
-['remote "storage"']
-    url = gdrive://1gGU0uexmnxl9pKROovsT7GUw7bPmi-gL
+    no_scm = True
+    remote = modeling
+[cache]
+    type = "hardlink,symlink"
+['remote "modeling"']
+    url = ssh://91.206.15.25/home/soldatovman/dvc_files
+    user = soldatovman

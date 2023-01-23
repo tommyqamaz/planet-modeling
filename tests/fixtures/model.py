@@ -1,5 +1,5 @@
 from torch import nn
-from src.config import IMG_SIZE
+from config.config import IMG_SIZE
 
 
 class NeuralNetwork(nn.Module):

@@ -26,6 +26,7 @@ class LitModel(pl.LightningModule):
 
         self.train_metrics = metrics.clone(prefix="train_")
         self.valid_metrics = metrics.clone(prefix="val_")
+        self.test_metrics = metrics.clone(prefix="test_")
         self.save_hyperparameters()
 
     def forward(self, x):
@@ -47,6 +48,19 @@ class LitModel(pl.LightningModule):
         self.valid_metrics.update(y_hat, y)
         self.log("valid_loss", loss, prog_bar=True, on_epoch=True, on_step=True)
         return loss
+
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        y_hat = self(x)
+        loss = self.loss_fn(y_hat, y)
+        self.test_metrics.update(y_hat, y)
+        self.log("test_loss", loss, prog_bar=True, on_epoch=True, on_step=True)
+
+    def on_test_start(self) -> None:
+        self.test_metrics.reset()
+
+    def on_validation_epoch_start(self) -> None:
+        self.valid_metrics.reset()
 
     def validation_epoch_end(self, outputs):
         output = self.valid_metrics.compute()

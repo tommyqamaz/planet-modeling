@@ -1,19 +1,21 @@
-from src.base_config import Config
-from src.config import IMG_SIZE, preprocessing, custom_augment
+import os
+
 from torch import nn
 from torch.optim import lr_scheduler
 from torch import optim
 import torchmetrics
-import os
+
+from config.base_config import Config, DataConfig
+from config.config import IMG_SIZE
 
 DATA_PATH = "tests/fixtures/data"
 NUM_CLASSES = 17
+SEED = 12
+BATCH_SIZE = 4
 
 config = Config(
     num_classes=NUM_CLASSES,
-    data_path=DATA_PATH,
-    num_workers=os.cpu_count(),
-    seed=12,
+    seed=SEED,
     lr=1e-3,
     loss=nn.BCEWithLogitsLoss,
     optimizer=optim.AdamW,
@@ -21,9 +23,7 @@ config = Config(
     scheduler=lr_scheduler.CosineAnnealingLR,
     scheduler_kwargs={"T_max": 1000, "eta_min": 0.0005},
     model_kwargs={"model_name": "pvt_v2_b1", "pretrained": True},
-    preprocessing=preprocessing,
-    augmentations=custom_augment,
-    batch_size=4,
+    batch_size=BATCH_SIZE,
     img_size=IMG_SIZE,
     n_epochs=1,
     experiment_name="test",
@@ -36,4 +36,14 @@ config = Config(
     ),
     logger_kwargs={},
     callbacks=[],
+)
+
+data_config = DataConfig(
+    seed=SEED,
+    img_size=IMG_SIZE,
+    test_size=0.4,
+    batch_size=BATCH_SIZE,
+    data_path="tests/fixtures/data",
+    num_workers=os.cpu_count(),
+    num_classes=NUM_CLASSES,
 )

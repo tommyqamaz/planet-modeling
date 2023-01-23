@@ -1,33 +1,33 @@
-import onnx
-import onnxruntime as ort
-
-import numpy as np
-import cv2
+import argparse
 from typing import Tuple
 
-import argparse
+import onnx
+import onnxruntime as ort
+from torch import nn
+import numpy as np
+import cv2
 
-classes = np.array(
-    [
-        "agriculture",
-        "artisinal_mine",
-        "bare_ground",
-        "blooming",
-        "blow_down",
-        "clear",
-        "cloudy",
-        "conventional_mine",
-        "cultivation",
-        "habitation",
-        "haze",
-        "partly_cloudy",
-        "primary",
-        "road",
-        "selective_logging",
-        "slash_burn",
-        "water",
-    ]
-)
+from config.consts import classnames
+
+
+class PredictModel(nn.Module):
+    def __init__(self, lit_model, ths):
+        super().__init__()
+        self.model = lit_model
+        self.ths = ths
+
+    def forward(self, x):
+        return self.model(x)
+
+    def predict_proba(self, x):
+        res = self.model(x)
+        res = res.sigmoid(res)
+        return res
+
+    def predict(self, x):
+        res = self.predict_proba(x)
+        res = (res > self.ths).to(int)
+        return res
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -66,16 +66,15 @@ def onnx_preprocessing(
     image *= denominator
 
     # transpose
-    image = image.transpose((2, 0, 1))[None]
-    return image
+    return image.transpose((2, 0, 1))[None]
 
 
-def predict(img: np.array, onnx_path: str = "pvtv2.onnx") -> np.array:
+def predict(img: np.ndarray, onnx_path: str = "pvtv2.onnx") -> np.ndarray:
     onnx_model = onnx.load(onnx_path)
     onnx.checker.check_model(onnx_model)
 
     providers = [
-        # 'CUDAExecutionProvider',
+        "CUDAExecutionProvider",
         "CPUExecutionProvider",
     ]
 
@@ -92,17 +91,20 @@ def predict(img: np.array, onnx_path: str = "pvtv2.onnx") -> np.array:
     return ort_outputs.flatten()
 
 
-def convert_to_classnames(predictions: np.array, classnames: np.array) -> list:
+def convert_to_classnames(predictions: np.ndarray, classnames: np.ndarray) -> list:
     """returns list with predicted classes"""
+    classnames = np.array(classnames)
     assert predictions.size == classnames.size
 
     return classnames[predictions.astype(bool).flatten()].tolist()
 
 
-def main(img_path: str, onnx_path: str = "pvtv2.onnx", classnames=classes):
+def main(
+    img_path: str, onnx_path: str = "pvtv2.onnx", classnames: list = classnames
+) -> list:
     img = cv2.imread(img_path)
     predictions = predict(img, onnx_path)
-    result = convert_to_classnames(predictions, classnames)
+    result = convert_to_classnames(predictions, np.array(classnames))
     return result
 
 
