@@ -1,6 +1,15 @@
+
 # Modeling
 Управление тренировкой производится через конфиг файлы в соответсвующей папке.
 В папке inference лежит все необходимое для инференса (dvc файлы модели и порогов thresholds)
+## Стек и технологии.
+```
+poetry, dvc, black, wandb
+
+pytorhc, pytorch-lightning, albumentations, torchmetrics, iterative-stratification
+
+onnx, onnxruntime
+```
 ## Конфигурация рабочего окружения
 ```
 pip install poetry
