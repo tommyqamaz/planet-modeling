@@ -1,5 +1,6 @@
 # Modeling
-Все параметры, необходимые для тренировки (например. размер батча, препроцессинг, колбеки, метрики и т.д.), находятся в файле src/config.py
+Управление тренировкой производится через конфиг файлы в соответсвующей папке.
+В папке inference лежит все необходимое для инференса (dvc файлы модели и порогов thresholds)
 ## Конфигурация рабочего окружения
 ```
 pip install poetry
@@ -10,7 +11,7 @@ make install
 - [здесь](https://www.kaggle.com/datasets/nikitarom/planets-dataset)
 - либо подключится к dvc и сделать `dvc pull`
 ## Тренировка модели
-Все параметры лежат в конфиге.
+Все параметры лежат в конфиге. После тренировки модель конвертируется в ONNX и так же автоматически вычисляются пороги для оптимальный классификации.
 
 ```
 make train
@@ -27,25 +28,28 @@ poetry run python -m src.onnx_predict path/to/image path/to/onnxmodel
 1. Инициализация DVC
 
     В директории проекта пишем команды:
-    ```
-    dvc init
    ```
-    ```
-    dvc remote add --default myremote gdrive://gdrive_folder_id
-    ```
-
-    где gdrive_folder_id берется из адреса вашей папки в Google Drive https://drive.google.com/drive/folders/gdrive_folder_id
+    make dvc-init_dvc
+   ```
+   или руками
 
     ```
-    dvc config cache.type hardlink,symlink
-    dvc checkout --relink
+	dvc init --no-scm
+	dvc remote add --default $(DVC_REMOTE_NAME) "your url here"$(USERNAME)/dvc_files
+	dvc remote modify $(DVC_REMOTE_NAME) user $(USERNAME)
+	dvc config cache.type hardlink,symlink
    ```
    2. Добавление модели
     ```
     dvc add modelname
     dvc push # отправляем на сервер
     ```
-
+## Тестирование модели
+для тестов используется pytest
+```
+   make test
+   make test-coverage
+```
 ## Трекинг модели
 WandB
 [тык](https://wandb.ai/kekus/soldatov_modeling/)
