@@ -6,7 +6,7 @@
 ```
 poetry, dvc, black, wandb
 
-pytorhc, pytorch-lightning, albumentations, torchmetrics, iterative-stratification
+pytorch, pytorch-lightning, albumentations, torchmetrics, iterative-stratification
 
 onnx, onnxruntime
 ```
